@@ -30,47 +30,32 @@ end
 
 def self.computer_guesser
   choices = [0, 1, 2, 3, 4, 5]
+  hash_choices ={}
   all_choices = choices.repeated_permutation(4).to_a
-  a = 1
-  b = 1
-  c = 0
-  d = 0
-  sample_array = [[0, 0, 0, 0], [0, 0, 1, 1], [5, 5, 3, 3], [4, 4, 2, 2]]
-  #sample_array.each {|guess_array|
-   #     print guess_array}
-
- @computer_guess = [0, 0, 1, 1]
- puts "The computer has made a guess #{@computer_guess}"  
- puts "The computer has received the following feedback #{self.computer_output(@set_code, @computer_guess)}"
-  recent_feedback = Array.new
-  recent_feedback = self.give_output(@set_code, @computer_guess)
-  counter = 0 
-  while recent_feedback.any? {|i| ["0", "white"].include? i}
-    if recent_feedback == ["0", "0", "0", "0"]
-      all_choices.each {|guess_array|
-        if guess_array.any? {|i| @computer_guess.include? i}
-          all_choices.delete(guess_array)
-        end
-      }
-      
-    end 
-  all_choices.each {|guess_array| 
-      if self.computer_output(guess_array, @computer_guess).sort != recent_feedback.sort
-        all_choices.delete(guess_array)
-      elsif guess_array == @computer_guess
-        all_choices.delete(guess_array)
-      end
-       } 
-    @computer_guess = all_choices[0]
-    recent_feedback = self.computer_output(@set_code, @computer_guess)
-    counter +=1
-    puts "Guess was #{@computer_guess} and feedback was #{recent_feedback}. The remaining possibilities are #{all_choices.length}"
-   if counter == 12
-    break
-   end
+  all_choices.each {|i|
+    hash_choices[i] = i}
+ @computer_guess = hash_choices[[0, 0, 1, 1]]
+ counter = 1
+ print "The computer has made its first guess #{@computer_guess}"
+ computer_feedback = self.computer_output(@set_code, @computer_guess)
+ print "It received the feedback #{computer_feedback}"
+ while computer_feedback.any? {|i|["0", "white"].include? i}
+  if computer_feedback == ["0", "0", "0", "0"]
+     hash_choices.delete_if {|key,value| key.any? {|i| @computer_guess.include? i}}
   end
-   puts "The computer guessed your secret code of #{@computer_guess}. It took the computer #{counter} guesses. "
+  hash_choices.delete_if {|key, value| self.computer_output(key, @computer_guess).sort != computer_feedback.sort}
+  hash_choices.delete_if {|key, value| key == @computer_guess}
+  @computer_guess = hash_choices.keys[0]
+  puts "the computer has made a new guess #{@computer_guess}"
+  computer_feedback = self.computer_output(@set_code, @computer_guess)
+  puts "the computer has received this feedback #{computer_feedback}"
+  counter +=1
+  if counter == 12
+    break
+  end
 end
+ puts "the computer has correctly guessed your code in #{counter} guesses"
+end 
 
 
 def self.get_input
