@@ -39,36 +39,22 @@ def self.computer_guesser
   #sample_array.each {|guess_array|
    #     print guess_array}
 
- @computer_guess = [a, b, c, d]
+ @computer_guess = [0, 0, 1, 1]
  puts "The computer has made a guess #{@computer_guess}"  
  puts "The computer has received the following feedback #{self.computer_output(@set_code, @computer_guess)}"
   recent_feedback = Array.new
-  recent_feedback = self.give_output(@set_code, @computer_guess.last(4))
+  recent_feedback = self.give_output(@set_code, @computer_guess)
   counter = 0 
   while recent_feedback.any? {|i| ["0", "white"].include? i}
     if recent_feedback == ["0", "0", "0", "0"]
-      puts "I'm being dramatic! "
       all_choices.each {|guess_array|
-         if guess_array.include? @computer_guess[0]
-          puts "I'm going to delete #{guess_array}"
-          all_choices.delete(guess_array)
-          
-         end
-         if guess_array.include? @computer_guess[1]
-          puts "I'm going to delete #{guess_array}"
-          all_choices.delete(guess_array)
-        end
-        if guess_array.include? @computer_guess[2]
-          puts "I'm going to delete #{guess_array}"
-          all_choices.delete(guess_array)
-        end
-        if guess_array.include? @computer_guess[3]
-          puts "I'm going to delete #{guess_array}"
+        if guess_array.any? {|i| @computer_guess.include? i}
           all_choices.delete(guess_array)
         end
       }
-    end
-    all_choices.each {|guess_array| 
+      
+    end 
+  all_choices.each {|guess_array| 
       if self.computer_output(guess_array, @computer_guess).sort != recent_feedback.sort
         all_choices.delete(guess_array)
       elsif guess_array == @computer_guess
